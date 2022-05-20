@@ -1,11 +1,18 @@
 import socket
+import RSA
 
 s = socket.socket()
-s.connect(('127.0.0.1',1234))
+s.connect(('127.0.0.1',12345))
+
+def decrypt(cipher_text):
+    
+    plain_text = cipher_text
+    
+    return plain_text
+
+
 while True:
-    str = input("S: ")
-    s.send(str.encode());
-    if(str == "Bye" or str == "bye"):
-        break
-    print ("N:",s.recv(1024).decode())
+    cipher = s.recv(1024)
+    plain_text = decrypt(cipher.decode())
+    print ("sender:",plain_text)
 s.close()
