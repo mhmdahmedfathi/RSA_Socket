@@ -11,15 +11,9 @@ print ("Socket Up and running with a connection from",addr)
 
 def encrypt(plain_text,n,e):
     str_encrypted = ""
-    byte_plain = plain_text.encode()
-    if len(byte_plain )% 4 != 0 :
-        for x in range(0,4 - len(byte_plain)% 4 ):
-                  byte_plain += bytes(0)      
-    for x in range(0,len(byte_plain),4):
-        if(x+4 <= len(byte_plain)) :
-            str_encrypted += RSA.Encrypt( str(int.from_bytes(byte_plain[x:x+4],"big")), n, e)
+    for x in range(0,len(plain_text)):
+        str_encrypted += RSA.Encrypt(plain_text[x], n, e)
     cipher_text = str_encrypted
-    print(plain_text,cipher_text,n,e)
     return cipher_text
 
 
