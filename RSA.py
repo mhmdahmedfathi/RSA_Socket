@@ -22,8 +22,6 @@ def ConvertToStr(n):
     return res[::-1]
 
 
-
-
 def GCD(a, b):
     if b == 0:
         return a
@@ -70,14 +68,13 @@ def Decrypt(c, p, q, e):
     return m
 
 
-
-
 def DecipherSimple(c, n, e, potential_messages):
     decipheredtext = ''
     for msg in potential_messages:
         if c == Encrypt(msg, n, e):
             return msg
     return decipheredtext
+
 
 def DecipherSmallPrime(c, n, e):
     p = 0
@@ -100,6 +97,7 @@ def DecipherSmallDiff(c, n, e):
             break
     decipheredtext = Decrypt(c, p, q, e)
     return decipheredtext
+
 
 def DecipherCommonDivisor(c1, n1, e1, c2, n2, e2):
     p = GCD(n1, n2)
