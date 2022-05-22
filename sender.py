@@ -1,7 +1,7 @@
 import socket
 import RSA
 
-print("trying to connect")
+print("Trying to connect...")
 s = socket.socket()
 port = 12345
 s.bind(('127.0.0.1', port))
@@ -20,14 +20,15 @@ def encrypt(plain_text, n, e):
 
 
 n_str = c.recv(1024)
-n = RSA.ConvertToInt(n_str.decode())
 e_str = c.recv(1024)
+
+n = RSA.ConvertToInt(n_str.decode())
 e = RSA.ConvertToInt(e_str.decode())
 
 
 try:
     while True:
-        plain_text = input("sender: ")
+        plain_text = input("Sender: ")
         cipher_text = encrypt(plain_text, n, e)
         c.send(cipher_text.encode())
 except KeyboardInterrupt:

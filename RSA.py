@@ -51,7 +51,7 @@ def PowMod(a, n, mod):
 
 
 def InvertModulo(a, n):
-    (b, x) = ExtendedEuclid(a, n)
+    (b, _) = ExtendedEuclid(a, n)
     if b < 0:
         b = (b % n + n) % n  # we don't want -ve integers
     return b
@@ -62,53 +62,6 @@ def Encrypt(m, n, e):
     return c
 
 
-def Decrypt(c, p, q, e):
-    d = InvertModulo(e, (p - 1) * (q - 1))
-    m = ConvertToStr(PowMod(ConvertToInt(c), d, p * q))
+def Decrypt(c, n, d):
+    m = ConvertToStr(PowMod(ConvertToInt(c), d, n))
     return m
-
-
-def DecipherSimple(c, n, e, potential_messages):
-    decipheredtext = ''
-    for msg in potential_messages:
-        if c == Encrypt(msg, n, e):
-            return msg
-    return decipheredtext
-
-
-def DecipherSmallPrime(c, n, e):
-    p = 0
-    q = 0
-    for p in range(2, n):
-        q = n // p
-        if p * q == n:
-            break
-    decipheredtext = Decrypt(c, p, q, e)
-    return decipheredtext
-
-
-def DecipherSmallDiff(c, n, e):
-    N = int(n ** 0.5)
-    p = 0
-    q = 0
-    for p in range(N - 5000, N + 1):
-        q = n // p
-        if p * q == n:
-            break
-    decipheredtext = Decrypt(c, p, q, e)
-    return decipheredtext
-
-
-def DecipherCommonDivisor(c1, n1, e1, c2, n2, e2):
-    p = GCD(n1, n2)
-    firstdecipheredtext = Decrypt(c1, p, n1 // p, e1)
-    seconddecipheredtext = Decrypt(c2, p, n2 // p, e2)
-    return firstdecipheredtext, seconddecipheredtext
-
-
-def DecipherHastad(c1, n1, c2, n2, e):
-    N1 = n1 * InvertModulo(n1, n2)
-    N2 = n2 * InvertModulo(n2, n1)
-    c = (ConvertToInt(c1) * N2 + ConvertToInt(c2) * N1) % (n1 * n2)
-    broadcastmessage = ConvertToStr(round(c ** (1/e)))
-    return broadcastmessage
