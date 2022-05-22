@@ -1,9 +1,9 @@
 from cmath import isnan
 from Crypto.Util import number
 from math import log2
+from RSA import *
 import socket
 import sympy
-import RSA
 
 n_length = 16
 s = socket.socket()
@@ -21,10 +21,10 @@ def Auto_key_generation():
     phi_n = (p - 1) * (q - 1)
 
     e = number.getPrime(int(log2(phi_n)))
-    while RSA.GCD(phi_n, e) != 1:
+    while GCD(phi_n, e) != 1:
         e = number.getPrime(int(log2(phi_n)))
 
-    d = RSA.InvertModulo(e, phi_n)
+    d = InvertModulo(e, phi_n)
 
     return e, d, n, p, q
 
@@ -38,12 +38,12 @@ def Manual_key_generation(string):
 
     phi_n = (p - 1) * (q - 1)
 
-    if (isnan(p) or isnan(q) or not(sympy.isprime(p)) or not(sympy.isprime(q)) or (RSA.GCD(phi_n, e) != 1) or e >= phi_n or e <= 1 or p == q or p == 1 or q == 1):
+    if (isnan(p) or isnan(q) or not(sympy.isprime(p)) or not(sympy.isprime(q)) or (GCD(phi_n, e) != 1) or e >= phi_n or e <= 1 or p == q or p == 1 or q == 1):
         print("Invalid inputs")
         return 1, 1, 1, 1, 1
 
     n = p * q
-    d = RSA.InvertModulo(e, phi_n)
+    d = InvertModulo(e, phi_n)
 
     return e, d, n, p, q
 
@@ -53,7 +53,7 @@ def decrypt(cipher_text, n, d):
     str_plain = ""
 
     for x in range(0, len(cipher_text), 2):
-        decrypt = RSA.Decrypt(cipher_text[x:x+2], n, d)
+        decrypt = Decrypt(cipher_text[x:x+2], n, d)
         str_plain += decrypt
 
     plain_text = str_plain
@@ -70,15 +70,15 @@ while p == 1:
     elif Auto_Or_Manual == 2:
         e, d, n, p, q = Manual_key_generation(input("Please enter p, q, e separated by comma:\n"))
 
-s.send(RSA.ConvertToStr(n).encode())
-s.send(RSA.ConvertToStr(e).encode())
+s.send(ConvertToStr(n).encode())
+s.send(ConvertToStr(e).encode())
 
 
 while True:
     try:
         cipher = s.recv(1024)
         plain_text = decrypt(cipher.decode('utf-8', 'ignore'), n, d)
-        print("Received: ", plain_text)
+        print("Received:", plain_text)
     except KeyboardInterrupt:
         break
 

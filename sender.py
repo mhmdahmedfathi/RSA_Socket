@@ -1,5 +1,5 @@
+from RSA import *
 import socket
-import RSA
 
 print("Trying to connect...")
 s = socket.socket()
@@ -7,14 +7,14 @@ port = 12345
 s.bind(('127.0.0.1', port))
 s.listen(5)
 c, addr = s.accept()
-print("connected successfully")
-print("Socket Up and running with a connection from", addr)
+print("Connected successfully!")
+print("Socket is up and running with a connection from", addr)
 
 
 def encrypt(plain_text, n, e):
     str_encrypted = ""
     for x in range(0, len(plain_text)):
-        str_encrypted += RSA.Encrypt(plain_text[x], n, e)
+        str_encrypted += Encrypt(plain_text[x], n, e)
     cipher_text = str_encrypted
     return cipher_text
 
@@ -22,8 +22,8 @@ def encrypt(plain_text, n, e):
 n_str = c.recv(1024)
 e_str = c.recv(1024)
 
-n = RSA.ConvertToInt(n_str.decode())
-e = RSA.ConvertToInt(e_str.decode())
+n = ConvertToInt(n_str.decode())
+e = ConvertToInt(e_str.decode())
 
 
 try:
