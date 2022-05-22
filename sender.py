@@ -19,12 +19,16 @@ def encrypt(plain_text, n, e):
     return cipher_text
 
 
+# Receive the public key from the receiver
 n_str = c.recv(1024)
 e_str = c.recv(1024)
 
 n = ConvertToInt(n_str.decode())
 e = ConvertToInt(e_str.decode())
 
+print("-------------------------------------------------------")
+print("PUBLIC KEY:", "n =", n, "e =", e)
+print("-------------------------------------------------------")
 
 try:
     while True:

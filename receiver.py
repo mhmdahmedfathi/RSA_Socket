@@ -9,7 +9,7 @@ s = socket.socket()
 s.connect(('127.0.0.1', 1234))
 
 
-def Auto_key_generation(n_length=16):
+def Auto_key_generation(n_length=64):
     p = number.getPrime(n_length // 2)
     q = number.getPrime(n_length // 2)
 
@@ -25,6 +25,7 @@ def Auto_key_generation(n_length=16):
 
     d = InvertModulo(e, phi_n)
     bits_needed = n_length // 8
+    
     return e, d, n, p, q, bits_needed
 
 
@@ -70,15 +71,18 @@ while p == 1:
     elif Auto_Or_Manual == 2:
         e, d, n, p, q, bits_needed = Manual_key_generation(input("Please enter p, q, e separated by comma:\n"))
 
+# Send the public key to the sender
 s.send(ConvertToStr(n).encode())
 s.send(ConvertToStr(e).encode())
 
+print("-------------------------------------------------------")
+print("PUBLIC KEY:", "n =", n, "e =", e)
+print("-------------------------------------------------------")
 
 while True:
     try:
         cipher = s.recv(1024)
-        plain_text = decrypt(cipher.decode(
-            'utf-8', 'ignore'), n, d, bits_needed)
+        plain_text = decrypt(cipher.decode('utf-8', 'ignore'), n, d, bits_needed)
         print("Received:", plain_text)
     except KeyboardInterrupt:
         break
