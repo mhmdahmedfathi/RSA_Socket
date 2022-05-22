@@ -5,12 +5,11 @@ from RSA import *
 import socket
 import sympy
 
-n_length = 16
 s = socket.socket()
 s.connect(('127.0.0.1', 1234))
 
 
-def Auto_key_generation():
+def Auto_key_generation(n_length=16):
     p = number.getPrime(n_length // 2)
     q = number.getPrime(n_length // 2)
 
@@ -26,7 +25,7 @@ def Auto_key_generation():
 
     d = InvertModulo(e, phi_n)
 
-    return e, d, n, p, q,2
+    return e, d, n, p, q, 2
 
 
 def Manual_key_generation(string):
@@ -44,11 +43,11 @@ def Manual_key_generation(string):
 
     n = p * q
     d = InvertModulo(e, phi_n)
-    bits_needed = p.bit_length() // 4 
-    return e, d, n, p, q,bits_needed
+    bits_needed = p.bit_length() // 4
+    return e, d, n, p, q, bits_needed
 
 
-def decrypt(cipher_text, n, d,bits_needed):
+def decrypt(cipher_text, n, d, bits_needed):
     decrypt = ""
     str_plain = ""
 
@@ -60,15 +59,16 @@ def decrypt(cipher_text, n, d,bits_needed):
 
     return plain_text
 
+
 # start sending
 e = d = n = q = p = 1
 
 while p == 1:
     Auto_Or_Manual = int(input("Do you want key generation to be (1) automatic or (2) manual?\n"))
     if Auto_Or_Manual == 1:
-        e, d, n, p, q,bits_needed = Auto_key_generation()
+        e, d, n, p, q, bits_needed = Auto_key_generation()
     elif Auto_Or_Manual == 2:
-        e, d, n, p, q,bits_needed = Manual_key_generation(input("Please enter p, q, e separated by comma:\n"))
+        e, d, n, p, q, bits_needed = Manual_key_generation(input("Please enter p, q, e separated by comma:\n"))
 
 s.send(ConvertToStr(n).encode())
 s.send(ConvertToStr(e).encode())
@@ -77,7 +77,8 @@ s.send(ConvertToStr(e).encode())
 while True:
     try:
         cipher = s.recv(1024)
-        plain_text = decrypt(cipher.decode('utf-8', 'ignore'), n, d,bits_needed)
+        plain_text = decrypt(cipher.decode(
+            'utf-8', 'ignore'), n, d, bits_needed)
         print("Received:", plain_text)
     except KeyboardInterrupt:
         break
