@@ -3,7 +3,7 @@ import socket
 
 print("Trying to connect...")
 s = socket.socket()
-port = 12345
+port = 1234
 s.bind(('127.0.0.1', port))
 s.listen(5)
 c, addr = s.accept()
