@@ -24,8 +24,8 @@ def Auto_key_generation(n_length=16):
         e = number.getPrime(int(log2(phi_n)))
 
     d = InvertModulo(e, phi_n)
-
-    return e, d, n, p, q, 2
+    bits_needed = n_length // 8
+    return e, d, n, p, q, bits_needed
 
 
 def Manual_key_generation(string):
