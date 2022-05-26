@@ -19,6 +19,12 @@ def encrypt(plain_text, n, e):
     return cipher_text
 
 
+if c.recv(1024).decode() == "exit":
+    c.close()
+    s.close()
+    print("\nSocket is closed")
+    exit(0)
+
 # Receive the public key from the receiver
 n_str = c.recv(1024)
 e_str = c.recv(1024)
@@ -27,7 +33,7 @@ n = ConvertToInt(n_str.decode())
 e = ConvertToInt(e_str.decode())
 
 print("-------------------------------------------------------")
-print("PUBLIC KEY:", "n =", n, "e =", e)
+print("PUBLIC KEY:", "n =", n, "\te =", e)
 print("-------------------------------------------------------")
 
 try:
@@ -36,5 +42,8 @@ try:
         cipher_text = encrypt(plain_text, n, e)
         c.send(cipher_text.encode())
 except KeyboardInterrupt:
+    print("\n\nExiting...")
+    c.send(b"exit")
     c.close()
+    s.close()
     exit(0)

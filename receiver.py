@@ -25,12 +25,24 @@ def Auto_key_generation(n_length=64):
 
     d = InvertModulo(e, phi_n)
     bits_needed = n_length // 8
-    
+
     return e, d, n, p, q, bits_needed
 
 
 def Manual_key_generation(string):
     p, q, e = (string.replace(" ", "").split(","))
+
+    if not p.isnumeric():
+        print("p must be a number")
+        return 1, 1, 1, 1, 1, 1
+    
+    if not q.isnumeric():
+        print("q must be a number")
+        return 1, 1, 1, 1, 1, 1
+    
+    if not e.isnumeric():
+        print("e must be a number")
+        return 1, 1, 1, 1, 1, 1
 
     p = int(p)
     q = int(q)
@@ -38,13 +50,47 @@ def Manual_key_generation(string):
 
     phi_n = (p - 1) * (q - 1)
 
-    if (isnan(p) or isnan(q) or not(sympy.isprime(p)) or not(sympy.isprime(q)) or (GCD(phi_n, e) != 1) or e >= phi_n or e <= 1 or p == q or p == 1 or q == 1):
-        print("Invalid inputs")
-        return 1, 1, 1, 1, 1
+    
+    if not sympy.isprime(p):
+        print("p must be a prime number")
+        return 1, 1, 1, 1, 1, 1
+    
+    if not sympy.isprime(q):
+        print("q must be a prime number")
+        return 1, 1, 1, 1, 1, 1
+    
+    if not sympy.isprime(e):
+        print("e must be a prime number")
+        return 1, 1, 1, 1, 1, 1
+    
+    if p == q:
+        print("p and q must be different")
+        return 1, 1, 1, 1, 1, 1
+    
+    if p == 1:
+        print("p must be greater than 1")
+        return 1, 1, 1, 1, 1, 1
+    
+    if q == 1:
+        print("q must be greater than 1")
+        return 1, 1, 1, 1, 1, 1
+    
+    if GCD(phi_n, e) != 1:
+        print("e must be coprime to phi_n")
+        return 1, 1, 1, 1, 1, 1
+    
+    if e > phi_n:
+        print("e must be less than phi_n")
+        return 1, 1, 1, 1, 1, 1
+    
+    if e < 2:
+        print("e must be greater than 1")
+        return 1, 1, 1, 1, 1, 1
 
     n = p * q
     d = InvertModulo(e, phi_n)
     bits_needed = p.bit_length() // 4
+
     return e, d, n, p, q, bits_needed
 
 
@@ -65,26 +111,44 @@ def decrypt(cipher_text, n, d, bits_needed):
 e = d = n = q = p = 1
 
 while p == 1:
-    Auto_Or_Manual = int(input("Do you want key generation to be (1) automatic or (2) manual?\n"))
-    if Auto_Or_Manual == 1:
-        e, d, n, p, q, bits_needed = Auto_key_generation()
-    elif Auto_Or_Manual == 2:
-        e, d, n, p, q, bits_needed = Manual_key_generation(input("Please enter p, q, e separated by comma:\n"))
+    try:
+        Auto_Or_Manual = int(input("Do you want key generation to be (1) automatic or (2) manual?\n"))
+        if Auto_Or_Manual == 1:
+            e, d, n, p, q, bits_needed = Auto_key_generation()
+        elif Auto_Or_Manual == 2:
+            e, d, n, p, q, bits_needed = Manual_key_generation(input("Please enter p, q, e separated by comma:\n"))
+    except KeyboardInterrupt:
+        print("\nExiting...")
+        s.send(b"exit")
+        s.close()
+        exit(0)
+
+# Send acknowledgement to sender
+s.send(b"ok")
 
 # Send the public key to the sender
 s.send(ConvertToStr(n).encode())
 s.send(ConvertToStr(e).encode())
 
 print("-------------------------------------------------------")
-print("PUBLIC KEY:", "n =", n, "e =", e)
+print("PUBLIC KEY:", "n =", n, "\te =", e)
+print("-------------------------------------------------------")
+
+print("\n-------------------------------------------------------")
+print("PRIVATE KEY:", "n =", n, "\td =", d)
 print("-------------------------------------------------------")
 
 while True:
     try:
         cipher = s.recv(1024)
+
+        if cipher == b"exit":
+            raise KeyboardInterrupt
+        
         plain_text = decrypt(cipher.decode('utf-8', 'ignore'), n, d, bits_needed)
         print("Received:", plain_text)
     except KeyboardInterrupt:
+        print("\nExiting...")
         break
 
 s.close()
